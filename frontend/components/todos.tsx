@@ -1,29 +1,14 @@
 import axios from "axios";
 import React, { Component, useEffect, useState } from "react";
-import {
-  Text,
-  StyleSheet,
-  View,
-  FlatList,
-  ScrollView,
-  TouchableOpacity,
-} from "react-native";
+import { Text, View, FlatList, TouchableOpacity } from "react-native";
 import { useTodoContext } from "../hooks/useTodoContext";
-import { TrashIcon } from "react-native-heroicons/outline";
-
-//set props type
-// type Notes = {
-//   notes: {
-//     title: string;
-//     content: string;
-//     date: string;
-//   }[];
-// };
+import { TrashIcon, PencilSquareIcon } from "react-native-heroicons/outline";
 
 type Category = {
   category: {
     title: string;
   };
+  navigation: any;
 };
 
 const color = [
@@ -33,7 +18,7 @@ const color = [
   "rgba(249, 247, 201, 1)",
 ];
 
-export default function Todos({ category }: Category) {
+export default function Todos({ category, navigation }: Category) {
   const { todo, dispatch } = useTodoContext();
   useEffect(() => {
     const fetch = async () => {
@@ -81,9 +66,14 @@ export default function Todos({ category }: Category) {
                   <Text>{item.category}</Text>
                   <Text>{item.color}</Text>
                 </View>
-                <TouchableOpacity onPress={() => deleteTodo(item._id)}>
-                  <TrashIcon size={24} color={"black"} />
-                </TouchableOpacity>
+                <View className="justify-between">
+                  <TouchableOpacity onPress={() => deleteTodo(item._id)}>
+                    <TrashIcon size={24} color={"black"} />
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => navigation(item._id)}>
+                    <PencilSquareIcon size={24} color={"black"} />
+                  </TouchableOpacity>
+                </View>
               </View>
             );
           }

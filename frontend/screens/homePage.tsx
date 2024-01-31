@@ -9,8 +9,14 @@ import {
 import { Picker } from "@react-native-picker/picker";
 import { Header, Todos } from "../components/export";
 import { Bars3Icon } from "react-native-heroicons/outline";
+import { StackParamList } from "../routes/stackRoute";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
-export default function HomePage() {
+interface HomeNavigation {
+  navigation: NativeStackNavigationProp<StackParamList, "Update">;
+}
+
+export default function HomePage({ navigation }: HomeNavigation) {
   const [language, setLanguage] = useState();
   const languages = ["Python", "Javascript", "Typescript"];
   const category = ["All", "Study", "Work", "Games", "Sports"];
@@ -22,7 +28,10 @@ export default function HomePage() {
       <Header />
       <View className=" mt-10 px-5 flex-row justify-between ">
         <Text className=" text-5xl font-light ">TODO LIST</Text>
-        <TouchableOpacity className="h-10 w-10  border-2 border-solid border-black rounded-lg items-center justify-center">
+        <TouchableOpacity
+          onPress={() => navigation.navigate("Update", { item: null })}
+          className="h-10 w-10  border-2 border-solid border-black rounded-lg items-center justify-center"
+        >
           <Text className=" text-3xl">+</Text>
         </TouchableOpacity>
       </View>
@@ -56,7 +65,12 @@ export default function HomePage() {
         />
       </View>
       <View className="mt-5 px-5">
-        <Todos category={userCategory} />
+        <Todos
+          category={userCategory}
+          navigation={(item: string) =>
+            navigation.navigate("Update", { item: item })
+          }
+        />
       </View>
 
       <View className=" flex-row justify-evenly mt-5"></View>

@@ -10,34 +10,32 @@ const Tab = createBottomTabNavigator();
 export default class HomeRoute extends Component {
   render() {
     return (
-      <NavigationContainer>
-        <Tab.Navigator
-          screenOptions={{
-            headerShown: false,
-            tabBarLabelStyle: { fontFamily: "rubik", fontSize: 12 },
-            tabBarActiveTintColor: "blue",
+      <Tab.Navigator
+        screenOptions={{
+          headerShown: false,
+          tabBarLabelStyle: { fontFamily: "rubik", fontSize: 12 },
+          tabBarActiveTintColor: "blue",
+        }}
+      >
+        <Tab.Screen
+          name="Home"
+          component={HomePage}
+          options={{
+            tabBarIcon: ({ focused }) => (
+              <HomeIcon size={24} color={focused ? "blue" : "gainsboro"} />
+            ),
           }}
-        >
-          <Tab.Screen
-            name="Home"
-            component={HomePage}
-            options={{
-              tabBarIcon: ({ focused }) => (
-                <HomeIcon size={24} color={focused ? "blue" : "gainsboro"} />
-              ),
-            }}
-          />
-          <Tab.Screen
-            name="AddPage"
-            component={AddPage}
-            options={{
-              tabBarIcon: ({ focused }) => (
-                <PencilIcon size={24} color={focused ? "blue" : "gainsboro"} />
-              ),
-            }}
-          />
-        </Tab.Navigator>
-      </NavigationContainer>
+        />
+        <Tab.Screen
+          name="AddPage"
+          component={AddPage}
+          options={{
+            tabBarIcon: ({ focused }) => (
+              <PencilIcon size={24} color={focused ? "blue" : "gainsboro"} />
+            ),
+          }}
+        />
+      </Tab.Navigator>
     );
   }
 }

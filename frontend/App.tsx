@@ -2,6 +2,7 @@ import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
 import { useFonts } from "expo-font";
 import HomeRoute from "./routes/homeroute";
 import { TodoContextProvider } from "./context/todoContext";
+import StackRoute from "./routes/stackRoute";
 export default function App() {
   const [myFonts] = useFonts({
     poppins: require("./assets/fonts/Poppins-Regular.ttf"),
@@ -18,7 +19,7 @@ export default function App() {
 
   return (
     <TodoContextProvider>
-      <HomeRoute />
+      <StackRoute />
     </TodoContextProvider>
   );
 }
