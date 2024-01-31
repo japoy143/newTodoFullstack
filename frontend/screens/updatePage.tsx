@@ -1,4 +1,4 @@
-import React, { Component, useState } from "react";
+import React, { Component, useEffect, useState } from "react";
 import {
   Text,
   StyleSheet,
@@ -11,19 +11,22 @@ import Header from "../components/header";
 import { Picker } from "@react-native-picker/picker";
 import axios from "axios";
 import { useTodoContext } from "../hooks/useTodoContext";
-import { useNavigation, NavigatorScreenParams } from "@react-navigation/native";
-import HomePage from "./homePage";
-import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
-import { RootStackParamList } from "../routes/homeroute";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { StackParamList } from "../routes/stackroute";
+import { useRoute, RouteProp } from "@react-navigation/native";
 
-type AddPageProps = {
-  navigation: BottomTabNavigationProp<RootStackParamList, "Home">;
-};
-export default function AddPage({ navigation }: AddPageProps) {
-  const { dispatch } = useTodoContext();
+//receiving route prop
+interface BackNavigation {
+  navigation: NativeStackNavigationProp<StackParamList, "HomeRoute">;
+}
+
+export default function UpdatePage({ navigation }: BackNavigation) {
+  const { todo, dispatch } = useTodoContext();
+  const route = useRoute<RouteProp<StackParamList, "Update">>();
   const [title, setTitle] = useState("");
   const dateNow = new Date();
-  const [todo, setTodo] = useState("");
+  const [date, setDate] = useState();
+  const [todos, setTodo] = useState("");
   const [category, setCategory] = useState("");
   const categories = ["Study", "Work", "Games", "Sports"];
   const [colors, setColors] = useState(NaN);
@@ -33,36 +36,53 @@ export default function AddPage({ navigation }: AddPageProps) {
     "rgba(213, 240, 193, 1)",
     "rgba(249, 247, 201, 1)",
   ];
+  const ItemId = route.params["ItemId"]["itemId"];
+
+  useEffect(() => {
+    const userTodo = todo.filter((element: any) => element._id === ItemId);
+
+    //the exact object
+    const todoData = userTodo[0];
+
+    const userTitle = todoData["title"];
+    const userNote = todoData["content"];
+    const userDate = todoData["day"];
+    const userCategory = todoData["category"];
+    const userColor = todoData["color"];
+
+    setTitle(userTitle);
+    setTodo(userNote);
+    setDate(userDate);
+    setCategory(userCategory);
+    setColors(userColor);
+
+    console.log(userTitle);
+  }, []);
 
   //add data
-  const AddTodo = async () => {
-    const userTodo = { title, category, dateNow, todo, colors };
+  const UpdateTodo = async () => {
+    const userTodo = { title, category, dateNow, todos, colors };
 
     try {
-      const todos = await axios.post(
-        "http://192.168.254.161:4000/data/todos",
+      const res = await axios.patch(
+        `http://192.168.254.161:4000/data/todos/${ItemId}`,
         {
           title: userTodo.title,
           category: userTodo.category,
           day: userTodo.dateNow.toDateString(),
-          content: userTodo.todo,
+          content: userTodo.todos,
           color: userTodo.colors,
-          done: false,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
         }
       );
 
-      if (todos.status === 200) {
+      if (res.status === 200) {
         setTitle("");
         setCategory("");
         setTodo("");
         setColors(NaN);
-        dispatch({ type: "INSERT_TODO", payload: todos.data });
-        navigation.navigate("Home");
+        console.log(res.data);
+        dispatch({ type: "UPDATE_TODO", payload: res.data });
+        navigation.pop();
       }
     } catch (error) {
       console.log(error, "Data insertion Failed");
@@ -84,7 +104,7 @@ export default function AddPage({ navigation }: AddPageProps) {
               underlineColorAndroid="transparent"
             />
             <Text className="mt-2 pl-3 text-gray-400 font-bold">
-              {dateNow.toDateString()}
+              {date ? date : dateNow.toDateString()}
             </Text>
           </View>
           <View>
@@ -109,7 +129,7 @@ export default function AddPage({ navigation }: AddPageProps) {
         </View>
         <View className="flex-1 px-5 py-2">
           <TextInput
-            value={todo}
+            value={todos}
             multiline={true}
             onChangeText={setTodo}
             placeholder="Note..."
@@ -119,15 +139,18 @@ export default function AddPage({ navigation }: AddPageProps) {
         </View>
       </View>
       <View className="flex-row  justify-between px-12 mb-3">
-        <TouchableOpacity className="h-10 w-28 bg-gray-300 items-center justify-center rounded-md">
+        <TouchableOpacity
+          onPress={() => navigation.pop()}
+          className="h-10 w-28 bg-gray-300 items-center justify-center rounded-md"
+        >
           <Text>Cancel</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={{ backgroundColor: color[2] }}
           className="h-10 w-32 items-center justify-center rounded-md"
-          onPress={() => AddTodo()}
+          onPress={() => UpdateTodo()}
         >
-          <Text>Add</Text>
+          <Text>Update</Text>
         </TouchableOpacity>
       </View>
     </View>

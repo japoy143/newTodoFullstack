@@ -19,6 +19,12 @@ export const useTodoReducer = (state, action) => {
           (element) => element._id !== action.payload._id
         ),
       };
+    case "UPDATE_TODO":
+      return {
+        todo: state.todo.map((element) =>
+          element._id === action.payload._id ? action.payload : element
+        ),
+      };
     default:
       return state;
   }

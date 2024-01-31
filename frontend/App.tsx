@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
 import { useFonts } from "expo-font";
 import HomeRoute from "./routes/homeroute";
+import StackRoute from "./routes/stackroute";
 import { TodoContextProvider } from "./context/todoContext";
 export default function App() {
   const [myFonts] = useFonts({
@@ -18,7 +19,7 @@ export default function App() {
 
   return (
     <TodoContextProvider>
-      <HomeRoute />
+      <StackRoute />
     </TodoContextProvider>
   );
 }
