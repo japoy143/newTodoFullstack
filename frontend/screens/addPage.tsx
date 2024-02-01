@@ -11,10 +11,12 @@ import Header from "../components/header";
 import { Picker } from "@react-native-picker/picker";
 import axios from "axios";
 import { useTodoContext } from "../hooks/useTodoContext";
-import { useNavigation, NavigatorScreenParams } from "@react-navigation/native";
-import HomePage from "./homePage";
+import { useNavigation } from "@react-navigation/native";
+import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
+import { RootTabList } from "../routes/homeroute";
 
 export default function AddPage() {
+  const homenav = useNavigation<BottomTabNavigationProp<RootTabList>>();
   const { dispatch } = useTodoContext();
   const [title, setTitle] = useState("");
   const dateNow = new Date();
@@ -113,7 +115,10 @@ export default function AddPage() {
         </View>
       </View>
       <View className="flex-row  justify-between px-12 mb-3">
-        <TouchableOpacity className="h-10 w-28 bg-gray-300 items-center justify-center rounded-md">
+        <TouchableOpacity
+          onPress={() => homenav.goBack()}
+          className="h-10 w-28 bg-gray-300 items-center justify-center rounded-md"
+        >
           <Text>Cancel</Text>
         </TouchableOpacity>
         <TouchableOpacity

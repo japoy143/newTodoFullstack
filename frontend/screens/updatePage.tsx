@@ -1,11 +1,10 @@
-import React, { Component, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Text,
   StyleSheet,
   View,
   TextInput,
   TouchableOpacity,
-  Alert,
 } from "react-native";
 import Header from "../components/header";
 import { Picker } from "@react-native-picker/picker";
@@ -21,10 +20,11 @@ interface UpdateNavigation {
 
 export default function UpdatePage({ navigation }: UpdateNavigation) {
   const route = useRoute<RouteProp<StackParamList>>();
-  const { dispatch } = useTodoContext();
+  const { todo, dispatch } = useTodoContext();
   const [title, setTitle] = useState("");
-  const dateNow = new Date();
-  const [todo, setTodo] = useState("");
+  const date = new Date();
+  const [dayCreated, setDayCreated] = useState();
+  const [content, setContent] = useState("");
   const [category, setCategory] = useState("");
   const categories = ["Study", "Work", "Games", "Sports"];
   const [colors, setColors] = useState(NaN);
@@ -34,39 +34,69 @@ export default function UpdatePage({ navigation }: UpdateNavigation) {
     "rgba(213, 240, 193, 1)",
     "rgba(249, 247, 201, 1)",
   ];
+  const todoId = route.params?.item;
+  const todoData = todo.filter((element: any) => element._id === todoId);
+  const todoInitializeData = todoData[0];
+  const initalState = [
+    setTitle,
+    setContent,
+    setCategory,
+    setDayCreated,
+    setColors,
+  ];
+  const setInitialData = [
+    todoInitializeData["title"],
+    todoInitializeData["content"],
+    todoInitializeData["category"],
+    todoInitializeData["day"],
+    todoInitializeData["color"],
+  ];
 
   useEffect(() => {
-    const data = route.params?.item;
-    console.log(data);
-  });
+    console.log(todoData);
+    const fetchAndSet = () => {
+      initalState.map((element, i) => {
+        element(setInitialData[i]);
+      });
+    };
+    fetchAndSet();
+  }, []);
   //add data
   const AddTodo = async () => {
-    const userTodo = { title, category, dateNow, todo, colors };
+    const userTodo = { title, category, date, content, colors };
 
     try {
-      const todos = await axios.post(
-        "http://192.168.254.161:4000/data/todos",
+      const update = await axios.patch(
+        `http://192.168.254.161:4000/data/todos/${todoId}`,
         {
           title: userTodo.title,
           category: userTodo.category,
-          day: userTodo.dateNow.toDateString(),
-          content: userTodo.todo,
+          day: userTodo.date.toDateString(),
+          content: userTodo.content,
           color: userTodo.colors,
           done: false,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
         }
       );
 
-      if (todos.status === 200) {
+      if (update.status === 200) {
         setTitle("");
+        setContent("");
         setCategory("");
-        setTodo("");
         setColors(NaN);
-        dispatch({ type: "INSERT_TODO", payload: todos.data });
+        console.log(update.data);
+        dispatch({
+          type: "UPDATE_TODO",
+          payload: {
+            _id: todoId,
+            title: userTodo.title,
+            category: userTodo.category,
+            day: userTodo.date.toDateString(),
+            content: userTodo.content,
+            color: userTodo.colors,
+            done: false,
+          },
+        });
+        navigation.pop();
       }
     } catch (error) {
       console.log(error, "Data insertion Failed");
@@ -87,8 +117,11 @@ export default function UpdatePage({ navigation }: UpdateNavigation) {
               cursorColor={"gray"}
               underlineColorAndroid="transparent"
             />
-            <Text className="mt-2 pl-3 text-gray-400 font-bold">
-              {dateNow.toDateString()}
+            <Text className="mt-2  text-gray-400 font-bold">
+              Created: {dayCreated}
+            </Text>
+            <Text className="mt-2  text-gray-400 font-bold">
+              {date.toDateString()}
             </Text>
           </View>
           <View>
@@ -113,9 +146,9 @@ export default function UpdatePage({ navigation }: UpdateNavigation) {
         </View>
         <View className="flex-1 px-5 py-2">
           <TextInput
-            value={todo}
+            value={content}
             multiline={true}
-            onChangeText={setTodo}
+            onChangeText={setContent}
             placeholder="Note..."
             cursorColor={"gray"}
             className=" text-lg "

@@ -11,12 +11,13 @@ import { Header, Todos } from "../components/export";
 import { Bars3Icon } from "react-native-heroicons/outline";
 import { StackParamList } from "../routes/stackRoute";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
+import { RootTabList } from "../routes/homeroute";
+import { useNavigation } from "@react-navigation/native";
 
-interface HomeNavigation {
-  navigation: NativeStackNavigationProp<StackParamList, "Update">;
-}
-
-export default function HomePage({ navigation }: HomeNavigation) {
+export default function HomePage() {
+  const addnav = useNavigation<BottomTabNavigationProp<RootTabList>>();
+  const nav = useNavigation<NativeStackNavigationProp<StackParamList>>();
   const [language, setLanguage] = useState();
   const languages = ["Python", "Javascript", "Typescript"];
   const category = ["All", "Study", "Work", "Games", "Sports"];
@@ -29,7 +30,7 @@ export default function HomePage({ navigation }: HomeNavigation) {
       <View className=" mt-10 px-5 flex-row justify-between ">
         <Text className=" text-5xl font-light ">TODO LIST</Text>
         <TouchableOpacity
-          onPress={() => navigation.navigate("Update", { item: null })}
+          onPress={() => addnav.navigate("AddPage")}
           className="h-10 w-10  border-2 border-solid border-black rounded-lg items-center justify-center"
         >
           <Text className=" text-3xl">+</Text>
@@ -67,9 +68,7 @@ export default function HomePage({ navigation }: HomeNavigation) {
       <View className="mt-5 px-5">
         <Todos
           category={userCategory}
-          navigation={(item: string) =>
-            navigation.navigate("Update", { item: item })
-          }
+          navigation={(item: string) => nav.navigate("Update", { item: item })}
         />
       </View>
 

@@ -5,7 +5,11 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { HomePage, AddPage } from "../screens/export";
 import { HomeIcon, PencilIcon } from "react-native-heroicons/outline";
 
-const Tab = createBottomTabNavigator();
+export type RootTabList = {
+  HomePage: undefined;
+  AddPage: undefined;
+};
+const Tab = createBottomTabNavigator<RootTabList>();
 
 export default class HomeRoute extends Component {
   render() {
@@ -18,7 +22,7 @@ export default class HomeRoute extends Component {
         }}
       >
         <Tab.Screen
-          name="Home"
+          name="HomePage"
           component={HomePage}
           options={{
             tabBarIcon: ({ focused }) => (

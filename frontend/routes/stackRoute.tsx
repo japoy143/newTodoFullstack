@@ -3,7 +3,7 @@ import { Text, StyleSheet, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import UpdatePage from "../screens/updatePage";
-import HomeRoute from "./homeroute";
+import HomeRoute, { RootTabList } from "./homeroute";
 
 export type StackParamList = {
   Update: {
