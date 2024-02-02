@@ -67,7 +67,6 @@ export default function AddPage() {
 
   return (
     <View className="flex-1 mt-5">
-      <Header />
       <View className="flex-1 border-2 border-solid  border-black m-4 rounded-3xl ">
         <View className="px-7 py-8 flex-row justify-between">
           <View>

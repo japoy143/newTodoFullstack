@@ -28,8 +28,17 @@ export const useTodoReducer = (state, action) => {
           return element;
         }
       });
+
       return {
         todo: updateTodo,
+      };
+    case "UPDATE_DONE":
+      return {
+        todo: state.todo.map((element) =>
+          element._id === action.payload._id
+            ? { ...element, done: !element.done }
+            : element
+        ),
       };
     default:
       return state;

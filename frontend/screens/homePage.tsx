@@ -14,19 +14,41 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
 import { RootTabList } from "../routes/homeroute";
 import { useNavigation } from "@react-navigation/native";
+import axios from "axios";
+import { useTodoContext } from "../hooks/useTodoContext";
 
 export default function HomePage() {
+  const { todo, dispatch } = useTodoContext();
   const addnav = useNavigation<BottomTabNavigationProp<RootTabList>>();
   const nav = useNavigation<NativeStackNavigationProp<StackParamList>>();
+  const [input, setInput] = useState("");
   const [language, setLanguage] = useState();
   const languages = ["Python", "Javascript", "Typescript"];
   const category = ["All", "Study", "Work", "Games", "Sports"];
   const [userCategory, setUserCategory] = useState({
     title: "",
   });
+
+  const ToggleDone = async (id: any) => {
+    const todoALL = await todo.filter((element: any) => element._id === id);
+    const todoObj = await todoALL[0];
+    const todoIdDone = await todoObj["done"];
+    console.log(!todoIdDone);
+    const res = await axios.patch(
+      `http://192.168.254.161:4000/data/todos/${id}`,
+      {
+        done: !todoIdDone,
+      }
+    );
+
+    if (res.status === 200) {
+      dispatch({ type: "UPDATE_DONE", payload: res.data });
+      console.log(res.data);
+    }
+  };
   return (
     <View className="mt-5">
-      <Header />
+      <Header input={input} setInput={setInput} />
       <View className=" mt-10 px-5 flex-row justify-between ">
         <Text className=" text-5xl font-light ">TODO LIST</Text>
         <TouchableOpacity
@@ -68,7 +90,9 @@ export default function HomePage() {
       <View className="mt-5 px-5">
         <Todos
           category={userCategory}
+          input={input}
           navigation={(item: string) => nav.navigate("Update", { item: item })}
+          setIsDone={(id: any) => ToggleDone(id)}
         />
       </View>
 

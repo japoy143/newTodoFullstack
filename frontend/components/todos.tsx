@@ -3,12 +3,15 @@ import React, { Component, useEffect, useState } from "react";
 import { Text, View, FlatList, TouchableOpacity } from "react-native";
 import { useTodoContext } from "../hooks/useTodoContext";
 import { TrashIcon, PencilSquareIcon } from "react-native-heroicons/outline";
+import CheckBox from "expo-checkbox";
 
 type Category = {
   category: {
     title: string;
   };
   navigation: any;
+  input: string;
+  setIsDone: any;
 };
 
 const color = [
@@ -18,7 +21,12 @@ const color = [
   "rgba(249, 247, 201, 1)",
 ];
 
-export default function Todos({ category, navigation }: Category) {
+export default function Todos({
+  category,
+  navigation,
+  input,
+  setIsDone,
+}: Category) {
   const { todo, dispatch } = useTodoContext();
   useEffect(() => {
     const fetch = async () => {
@@ -53,26 +61,72 @@ export default function Todos({ category, navigation }: Category) {
         numColumns={2}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item, index }) => {
-          if (category.title === "" || category.title.toLowerCase() === "all") {
+          if (input === "" || category.title === "all") {
             return (
               <View
-                className={`w-40  h-52 p-10  m-2  rounded-xl flex-row`}
+                className={`w-40  h-52 p-10  m-2  rounded-xl `}
                 style={{ backgroundColor: color[item.color] }}
               >
-                <View>
-                  <Text>{item.title}</Text>
-                  <Text>{item.content}</Text>
-                  <Text>{item.day}</Text>
-                  <Text>{item.category}</Text>
-                  <Text>{item.color}</Text>
+                <CheckBox
+                  key={item._id}
+                  value={item.done}
+                  onValueChange={() => setIsDone(item._id)}
+                />
+
+                <View
+                  className={` flex-row`}
+                  style={{ backgroundColor: color[item.color] }}
+                >
+                  <View>
+                    <Text>{item.title}</Text>
+                    <Text>{item.content}</Text>
+                    <Text>{item.day}</Text>
+                    <Text>{item.category}</Text>
+                    <Text>{item.color}</Text>
+                  </View>
+                  <View className="justify-between">
+                    <TouchableOpacity onPress={() => deleteTodo(item._id)}>
+                      <TrashIcon size={24} color={"black"} />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => navigation(item._id)}>
+                      <PencilSquareIcon size={24} color={"black"} />
+                    </TouchableOpacity>
+                  </View>
                 </View>
-                <View className="justify-between">
-                  <TouchableOpacity onPress={() => deleteTodo(item._id)}>
-                    <TrashIcon size={24} color={"black"} />
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={() => navigation(item._id)}>
-                    <PencilSquareIcon size={24} color={"black"} />
-                  </TouchableOpacity>
+              </View>
+            );
+          }
+          if (input.toLowerCase().includes(item.category.toLowerCase())) {
+            return (
+              <View
+                className={`w-40  h-52 p-10  m-2  rounded-xl `}
+                style={{ backgroundColor: color[item.color] }}
+              >
+                <CheckBox
+                  key={item._id}
+                  value={item.done}
+                  onValueChange={() => setIsDone(item._id)}
+                />
+
+                <View
+                  className={` flex-row`}
+                  style={{ backgroundColor: color[item.color] }}
+                >
+                  <View>
+                    <Text>{item.title}</Text>
+                    <Text>{item.content}</Text>
+                    <Text>{item.day}</Text>
+                    <Text>{item.category}</Text>
+                    <Text>{item.color}</Text>
+                  </View>
+                  <View className="justify-between">
+                    <TouchableOpacity onPress={() => deleteTodo(item._id)}>
+                      <TrashIcon size={24} color={"black"} />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => navigation(item._id)}>
+                      <PencilSquareIcon size={24} color={"black"} />
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </View>
             );
@@ -82,14 +136,35 @@ export default function Todos({ category, navigation }: Category) {
           ) {
             return (
               <View
-                className={`w-40  h-52 p-10  m-2 rounded-xl `}
+                className={`w-40  h-52 p-10  m-2  rounded-xl `}
                 style={{ backgroundColor: color[item.color] }}
               >
-                <Text>{item.title}</Text>
-                <Text>{item.content}</Text>
-                <Text>{item.day}</Text>
-                <Text>{item.category}</Text>
-                <Text>{item.color}</Text>
+                <CheckBox
+                  key={item._id}
+                  value={item.done}
+                  onValueChange={() => setIsDone(item._id)}
+                />
+
+                <View
+                  className={` flex-row`}
+                  style={{ backgroundColor: color[item.color] }}
+                >
+                  <View>
+                    <Text>{item.title}</Text>
+                    <Text>{item.content}</Text>
+                    <Text>{item.day}</Text>
+                    <Text>{item.category}</Text>
+                    <Text>{item.color}</Text>
+                  </View>
+                  <View className="justify-between">
+                    <TouchableOpacity onPress={() => deleteTodo(item._id)}>
+                      <TrashIcon size={24} color={"black"} />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => navigation(item._id)}>
+                      <PencilSquareIcon size={24} color={"black"} />
+                    </TouchableOpacity>
+                  </View>
+                </View>
               </View>
             );
           } else {
